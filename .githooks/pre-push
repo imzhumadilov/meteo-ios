@@ -1,0 +1,31 @@
+#!/bin/sh
+#
+# Блокирует прямой push в main/master.
+#
+# Это первый из трёх слоёв. Второй — ruleset "protect-main" на GitHub, который
+# отвергает такой пуш на сервере. Третий — хук Claude Code .claude/hooks/guard-git.sh,
+# который ловит обход через --no-verify и мердж PR.
+#
+# Хук не работает автоматически после clone: git не включает свои хуки сам.
+# На новой машине нужно один раз выполнить:
+#     git config core.hooksPath .githooks
+
+protected='refs/heads/main refs/heads/master'
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+	for branch in $protected; do
+		if [ "$remote_ref" = "$branch" ]; then
+			echo "" >&2
+			echo "Пуш в ${remote_ref#refs/heads/} заблокирован хуком .githooks/pre-push." >&2
+			echo "" >&2
+			echo "Работайте через ветку и pull request:" >&2
+			echo "    git switch -c feature/<TICKET-ID>-<кратко> main" >&2
+			echo "    git push -u origin feature/<TICKET-ID>-<кратко>" >&2
+			echo "    gh pr create --draft" >&2
+			echo "" >&2
+			exit 1
+		fi
+	done
+done
+
+exit 0

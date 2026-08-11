@@ -1,0 +1,23 @@
+## macOS
+.DS_Store
+
+## Артефакты сборки
+.build/
+DerivedData/
+build/
+
+## Xcode: персональное состояние — у каждого разработчика своё
+xcuserdata/
+*.xcuserstate
+*.xcscmblueprint
+*.xccheckout
+
+## Xcode: мусор
+*.moved-aside
+*.hmap
+*.dSYM
+*.dSYM.zip
+*.ipa
+
+## Swift Package Manager
+.swiftpm/
