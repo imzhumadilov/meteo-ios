@@ -9,9 +9,12 @@ import SwiftUI
 
 @main
 struct MeteoApp: App {
+
+    private let container = DIContainer()
+
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            LocationSearchView(viewModel: container.makeLocationSearchViewModel())
         }
     }
 }
