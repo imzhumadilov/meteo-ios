@@ -44,7 +44,7 @@ Clean Architecture, async/await и клиент-серверная работа,
 
     xcrun simctl boot "iPhone 17" 2>/dev/null; open -a Simulator
     xcrun simctl install booted .build/DerivedData/Build/Products/Debug-iphonesimulator/Meteo.app
-    xcrun simctl launch booted <bundle-id>
+    xcrun simctl launch booted com.meteo.project.Meteo
     xcrun simctl io booted screenshot /tmp/screen.png
 
 ## Архитектура: Clean Architecture
@@ -193,6 +193,31 @@ Clean Architecture, async/await и клиент-серверная работа,
 | spacing/xl           | Spacing.xl            | 32       |
 | radius/md            | Radius.md             | 12       |
 | radius/lg            | Radius.lg             | 20       |
+
+Типографики в переменных Figma нет — размеры в макете заданы числами. В коде она
+живёт обёрткой над семантическими стилями: фиксированный размер в пунктах
+не масштабируется вместе с Dynamic Type, а это доступность, а не косметика.
+
+| Swift                          | Стиль                            | В макете     |
+|--------------------------------|----------------------------------|--------------|
+| Typography.largeTitle          | .largeTitle + .semibold          | 34 semibold  |
+| Typography.title               | .title + .semibold               | 28 semibold  |
+| Typography.headline            | .headline                        | 17 semibold  |
+| Typography.body                | .body                            | 17 regular   |
+| Typography.subheadline         | .subheadline                     | 15 regular   |
+| Typography.footnote            | .footnote                        | 13 regular   |
+| Typography.temperatureDisplay  | .system(size: 64, weight: .semibold) | 64      |
+
+`temperatureDisplay` — единственный размер без семантического эквивалента.
+Число в нём законно: файл токенов и есть место, где литералы определяются.
+
+Толщина рамки поля ввода переменной в Figma тоже не имеет, значения взяты
+из описания тикета METEO-1:
+
+| Swift                 | Значение | Когда          |
+|-----------------------|----------|----------------|
+| BorderWidth.regular   | 1        | без фокуса     |
+| BorderWidth.focused   | 2        | в фокусе       |
 
 В вёрстке **не должно быть числовых и цветовых литералов**: ни `.padding(16)`,
 ни `.font(.system(size: 17))`, ни хексов. Литерал означает потерянную связь
