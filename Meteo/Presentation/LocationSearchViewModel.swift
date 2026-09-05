@@ -70,7 +70,7 @@ final class LocationSearchViewModel {
     }
 
     private static func message(for error: Error) -> String {
-        switch error as? SearchError {
+        switch error as? WeatherServiceError {
         case .offline: "Нет соединения с интернетом"
         case .server: "Сервер не отвечает"
         case .invalidData: "Не удалось прочитать ответ сервера"

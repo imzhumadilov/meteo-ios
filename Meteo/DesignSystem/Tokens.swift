@@ -44,6 +44,7 @@ nonisolated enum BorderWidth {
 nonisolated enum Typography {
     static let largeTitle = Font.largeTitle.weight(.semibold)
     static let title = Font.title.weight(.semibold)
+    static let title3 = Font.title3
     static let headline = Font.headline
     static let body = Font.body
     static let subheadline = Font.subheadline

@@ -202,6 +202,7 @@ Clean Architecture, async/await и клиент-серверная работа,
 |--------------------------------|----------------------------------|--------------|
 | Typography.largeTitle          | .largeTitle + .semibold          | 34 semibold  |
 | Typography.title               | .title + .semibold               | 28 semibold  |
+| Typography.title3              | .title3                          | 20 regular   |
 | Typography.headline            | .headline                        | 17 semibold  |
 | Typography.body                | .body                            | 17 regular   |
 | Typography.subheadline         | .subheadline                     | 15 regular   |
