@@ -59,10 +59,10 @@ struct SearchLocationsUseCaseTests {
 
     @Test("Ошибка репозитория доходит до вызывающего")
     func propagatesRepositoryError() async {
-        let spy = LocationSearchSpy(returning: .failure(SearchError.offline))
+        let spy = LocationSearchSpy(returning: .failure(WeatherServiceError.offline))
         let useCase = SearchLocationsUseCase(repository: spy)
 
-        await #expect(throws: SearchError.offline) {
+        await #expect(throws: WeatherServiceError.offline) {
             try await useCase.execute(query: "алма")
         }
     }
