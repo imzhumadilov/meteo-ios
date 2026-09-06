@@ -61,7 +61,7 @@ final class ForecastViewModel {
     // MARK: - Форматирование
 
     func temperature(_ value: Double) -> String {
-        "\(Int(value.rounded()))°"
+        TemperatureText.text(for: value)
     }
 
     func humidity(_ weather: CurrentWeather) -> String {

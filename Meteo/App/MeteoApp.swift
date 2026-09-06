@@ -14,8 +14,9 @@ struct MeteoApp: App {
 
     var body: some Scene {
         WindowGroup {
-            LocationSearchView(
-                viewModel: container.makeLocationSearchViewModel(),
+            SavedLocationsView(
+                viewModel: container.makeSavedLocationsViewModel(),
+                makeSearchViewModel: container.makeLocationSearchViewModel,
                 makeForecastViewModel: container.makeForecastViewModel(for:)
             )
         }
