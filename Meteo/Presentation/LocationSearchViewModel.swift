@@ -37,14 +37,31 @@ final class LocationSearchViewModel {
     private let searchLocations: SearchLocationsUseCase
     private let debounce: Duration
 
+    private let isFrozen: Bool
+
     init(searchLocations: SearchLocationsUseCase, debounce: Duration = .milliseconds(300)) {
         self.searchLocations = searchLocations
         self.debounce = debounce
+        self.isFrozen = false
+    }
+
+    /// Шов для снапшотов: экран показывает заданное состояние и ничего
+    /// не загружает.
+    ///
+    /// Без «не загружает» одного начального состояния мало: `.task` экрана
+    /// срабатывает при появлении и перезаписывает его раньше, чем снимок сделан.
+    init(frozenAt state: State, searchLocations: SearchLocationsUseCase) {
+        self.searchLocations = searchLocations
+        self.debounce = .zero
+        self.isFrozen = true
+        self.state = state
     }
 
     /// Вызывается из `.task(id: searchID)`. Отменой управляет SwiftUI: смена
     /// идентификатора снимает предыдущую задачу, поэтому здесь её нет.
     func search() async {
+        guard !isFrozen else { return }
+
         let trimmed = query.trimmingCharacters(in: .whitespacesAndNewlines)
         guard trimmed.count >= SearchLocationsUseCase.minimumQueryLength else {
             state = .hint

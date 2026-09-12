@@ -20,7 +20,14 @@ Clean Architecture, async/await и клиент-серверная работа,
     set -o pipefail && xcodebuild -scheme Meteo \
       -destination 'platform=iOS Simulator,name=iPhone 17,arch=arm64' \
       -derivedDataPath .build/DerivedData \
-      -only-testing:MeteoTests -parallel-testing-enabled NO test | xcbeautify
+      -testPlan Fast -parallel-testing-enabled NO test | xcbeautify
+
+Полный прогон — перед тем, как отдавать работу на ревью:
+
+    set -o pipefail && xcodebuild -scheme Meteo \
+      -destination 'platform=iOS Simulator,name=iPhone 17,arch=arm64' \
+      -derivedDataPath .build/DerivedData \
+      -testPlan Full -parallel-testing-enabled NO test | xcbeautify
 
 Флаги не меняй, каждый нужен:
 
@@ -29,8 +36,9 @@ Clean Architecture, async/await и клиент-серверная работа,
 - `arch=arm64` — под именем `iPhone 17` подходят две записи, иначе выбор
   неоднозначен
 - `-derivedDataPath` — предсказуемый путь к собранному `.app`
-- `-only-testing:MeteoTests` — UI-тесты исключены сознательно: шаблонные тесты
-  в `MeteoUITests` медленные и нестабильные. Не запускай `test` без этого флага
+- `-testPlan Fast` — быстрый набор: юнит и интеграционные тесты, без снапшотов
+  и без UI. Секунды вместо минут. Не запускай `test` без указания плана: без него
+  берётся план по умолчанию, и состав прогона перестаёт быть очевидным
 - `-parallel-testing-enabled NO` — иначе Xcode плодит клоны симулятора
 
 Сборка должна проходить **без предупреждений**. Предупреждение — незакрытая работа.
@@ -132,11 +140,41 @@ Clean Architecture, async/await и клиент-серверная работа,
 
 **Снапшоты:** устройство и версия iOS фиксируются явно в коде теста —
 **iPhone 17, iOS 26.5**. Эталон, снятый на другом устройстве или другой версии
-системы, невалиден и даст ложное падение.
+системы, невалиден и даст ложное падение. Прогон на чужом окружении не молчит:
+`Snapshot` сверяет `SIMULATOR_DEVICE_NAME` и версию системы и падает с объяснением.
 
-**Разделение прогонов** через test plan появится вместе с тикетом про снапшоты:
-`Fast` — юнит и интеграционные, `Full` — плюс снапшоты и UI, `Contract` —
-против живого API. До этого быстрая проверка идёт через `-only-testing:MeteoTests`.
+Эталоны лежат в `MeteoTests/__Snapshots__/<Набор>/` и закоммичены. Перегенерация
+при **осознанном** изменении вёрстки:
+
+    xcodebuild -scheme Meteo \
+      -destination 'platform=iOS Simulator,name=iPhone 17,arch=arm64' \
+      -derivedDataPath .build/DerivedData -testPlan Full \
+      -parallel-testing-enabled NO TEST_RUNNER_SNAPSHOT_RECORD=1 test
+
+Префикс `TEST_RUNNER_` обязателен: без него переменная останется в шелле
+и до процесса тестов не доедет. После перезаписи **посмотрите картинки глазами**
+и прогоните ещё раз — прогон с записью намеренно красный, потому что тест,
+сам создавший эталон, ничего не проверил.
+
+Разошедшийся снимок кладётся рядом с эталоном как `<имя>.failure.png` —
+он в `.gitignore`, коммитить его не нужно.
+
+Снапшоты включаются переменной `SNAPSHOTS`, которую задаёт план `Full`.
+В `Fast` её нет, и наборы помечаются пропущенными. Через `skippedTests`
+в плане это не работает: для наборов Swift Testing Xcode их не применяет.
+
+**Разделение прогонов** сделано через test plan в корне репозитория:
+
+| План | Что входит | Когда гонять |
+|---|---|---|
+| `Fast.xctestplan` | юнит и интеграционные | в цикле работы над тикетом |
+| `Full.xctestplan` | плюс снапшоты и UI | перед тем, как отдать на ревью |
+
+`Contract` против живого API появится вместе с тикетом про контрактные тесты.
+
+Планы подключены к общей схеме `Meteo.xcscheme`. Она лежит в репозитории —
+значит состав прогонов одинаков у всех, а не зависит от того, что каждый
+выбрал у себя в Xcode.
 
 Правило, которое стоит за этим разделением: **тесты, зависящие от внешних систем,
 отделены от тестов, зависящих только от нашего кода.** Иначе первые расшатывают
