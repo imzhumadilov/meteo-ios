@@ -31,6 +31,8 @@ final class ForecastViewModel {
     private let getForecast: GetForecastUseCase
     private let now: @Sendable () -> Date
 
+    private let isFrozen: Bool
+
     init(
         location: Location,
         getForecast: GetForecastUseCase,
@@ -39,9 +41,26 @@ final class ForecastViewModel {
         self.location = location
         self.getForecast = getForecast
         self.now = now
+        self.isFrozen = false
+    }
+
+    /// Шов для снапшотов: см. `LocationSearchViewModel`.
+    init(
+        frozenAt state: State,
+        location: Location,
+        getForecast: GetForecastUseCase,
+        now: @escaping @Sendable () -> Date = Date.init
+    ) {
+        self.location = location
+        self.getForecast = getForecast
+        self.now = now
+        self.isFrozen = true
+        self.state = state
     }
 
     func load() async {
+        guard !isFrozen else { return }
+
         state = .loading
 
         do {

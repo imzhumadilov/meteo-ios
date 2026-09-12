@@ -21,3 +21,6 @@ xcuserdata/
 
 ## Swift Package Manager
 .swiftpm/
+
+## Снапшоты: диагностика разошедшихся снимков
+*.failure.png
