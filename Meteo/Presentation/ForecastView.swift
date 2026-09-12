@@ -17,6 +17,7 @@ struct ForecastView: View {
         content
             .frame(maxWidth: .infinity, maxHeight: .infinity)
             .background(Palette.background)
+            .accessibilityIdentifier("forecast.screen.\(viewModel.location.id)")
             .navigationTitle(viewModel.location.name)
             .navigationBarTitleDisplayMode(.large)
             .task(id: viewModel.attempt) {

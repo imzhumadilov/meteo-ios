@@ -17,13 +17,23 @@ final class DIContainer {
     private let removeSavedLocation: RemoveSavedLocationUseCase
 
     init() {
-        let client = HTTPClient()
-        let forecasts = OpenMeteoForecastRepository(client: client)
-        let store = UserDefaultsSavedLocationsStore()
+        // Единственная развилка, где приложение знает о тестах.
+        let locations: LocationSearching
+        let forecasts: ForecastProviding
+        let store: SavedLocationsStoring
 
-        searchLocations = SearchLocationsUseCase(
-            repository: OpenMeteoLocationRepository(client: client)
-        )
+        if UITestingEnvironment.isEnabled {
+            locations = StubLocationSearching()
+            forecasts = StubForecastProviding()
+            store = InMemorySavedLocationsStore()
+        } else {
+            let client = HTTPClient()
+            locations = OpenMeteoLocationRepository(client: client)
+            forecasts = OpenMeteoForecastRepository(client: client)
+            store = UserDefaultsSavedLocationsStore()
+        }
+
+        searchLocations = SearchLocationsUseCase(repository: locations)
         getForecast = GetForecastUseCase(repository: forecasts)
         getSavedLocations = GetSavedLocationsUseCase(store: store)
         getWeatherForSavedLocations = GetWeatherForSavedLocationsUseCase(
