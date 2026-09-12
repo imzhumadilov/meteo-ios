@@ -1,28 +1,32 @@
 {
-  "configurations" : [
+  "configurations": [
     {
-      "id" : "F3223BF4-5592-4093-89E2-64283E6F3363",
-      "name" : "Full",
-      "options" : {
-
-      }
+      "id": "F3223BF4-5592-4093-89E2-64283E6F3363",
+      "name": "Full",
+      "options": {}
     }
   ],
-  "defaultOptions" : {
-    "targetForVariableExpansion" : {
-      "containerPath" : "container:Meteo.xcodeproj",
-      "identifier" : "280E4DEC302B9FAF00587022",
-      "name" : "Meteo"
-    }
+  "defaultOptions": {
+    "targetForVariableExpansion": {
+      "containerPath": "container:Meteo.xcodeproj",
+      "identifier": "280E4DEC302B9FAF00587022",
+      "name": "Meteo"
+    },
+    "environmentVariableEntries": [
+      {
+        "key": "SNAPSHOTS",
+        "value": "1"
+      }
+    ]
   },
-  "testTargets" : [
+  "testTargets": [
     {
-      "target" : {
-        "containerPath" : "container:Meteo.xcodeproj",
-        "identifier" : "280E4DF9302B9FB200587022",
-        "name" : "MeteoTests"
+      "target": {
+        "containerPath": "container:Meteo.xcodeproj",
+        "identifier": "280E4DF9302B9FB200587022",
+        "name": "MeteoTests"
       }
     }
   ],
-  "version" : 1
+  "version": 1
 }

@@ -1,28 +1,26 @@
 {
-  "configurations" : [
+  "configurations": [
     {
-      "id" : "9C8F578D-FF52-420E-8F01-43BDB036513C",
-      "name" : "Fast",
-      "options" : {
-
-      }
+      "id": "9C8F578D-FF52-420E-8F01-43BDB036513C",
+      "name": "Fast",
+      "options": {}
     }
   ],
-  "defaultOptions" : {
-    "targetForVariableExpansion" : {
-      "containerPath" : "container:Meteo.xcodeproj",
-      "identifier" : "280E4DEC302B9FAF00587022",
-      "name" : "Meteo"
+  "defaultOptions": {
+    "targetForVariableExpansion": {
+      "containerPath": "container:Meteo.xcodeproj",
+      "identifier": "280E4DEC302B9FAF00587022",
+      "name": "Meteo"
     }
   },
-  "testTargets" : [
+  "testTargets": [
     {
-      "target" : {
-        "containerPath" : "container:Meteo.xcodeproj",
-        "identifier" : "280E4DF9302B9FB200587022",
-        "name" : "MeteoTests"
+      "target": {
+        "containerPath": "container:Meteo.xcodeproj",
+        "identifier": "280E4DF9302B9FB200587022",
+        "name": "MeteoTests"
       }
     }
   ],
-  "version" : 1
+  "version": 1
 }
