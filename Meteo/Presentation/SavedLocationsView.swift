@@ -38,6 +38,7 @@ struct SavedLocationsView: View {
                             Image(systemName: "plus")
                         }
                         .tint(Palette.accent)
+                        .accessibilityIdentifier("saved.add")
                     }
                 }
                 .navigationDestination(item: $selectedLocation) { location in
@@ -133,6 +134,7 @@ struct SavedLocationsView: View {
             .contentShape(.rect)
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("saved.city.\(row.location.id)")
     }
 
     @ViewBuilder
