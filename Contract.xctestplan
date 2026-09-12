@@ -1,0 +1,32 @@
+{
+  "configurations": [
+    {
+      "id": "E816F2A0-652E-4561-A62C-4960A0D4E02B",
+      "name": "Contract",
+      "options": {}
+    }
+  ],
+  "defaultOptions": {
+    "targetForVariableExpansion": {
+      "containerPath": "container:Meteo.xcodeproj",
+      "identifier": "280E4DEC302B9FAF00587022",
+      "name": "Meteo"
+    },
+    "environmentVariableEntries": [
+      {
+        "key": "CONTRACT",
+        "value": "1"
+      }
+    ]
+  },
+  "testTargets": [
+    {
+      "target": {
+        "containerPath": "container:Meteo.xcodeproj",
+        "identifier": "280E4DF9302B9FB200587022",
+        "name": "MeteoTests"
+      }
+    }
+  ],
+  "version": 1
+}
