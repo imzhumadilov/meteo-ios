@@ -27,10 +27,21 @@ final class CriticalPathUITests: XCTestCase {
         // Список пуст — добавляем город.
         let add = app.buttons["saved.add"]
         XCTAssertTrue(add.waitForExistence(timeout: Self.timeout), "кнопка добавления не появилась")
+
+        // Существование не означает кликабельность: сразу после запуска кнопка
+        // уже есть в дереве, но ещё выезжает вместе с панелью, и тап по ней
+        // пропадает впустую — поиск тогда не открывается вовсе.
+        XCTAssertTrue(
+            add.waitForHittable(timeout: Self.timeout),
+            "кнопка добавления так и не стала кликабельной"
+        )
         add.tap()
 
         let query = app.textFields["search.query"]
-        XCTAssertTrue(query.waitForExistence(timeout: Self.timeout), "поле поиска не появилось")
+        if !query.waitForExistence(timeout: Self.shortTimeout) {
+            add.tap()
+            XCTAssertTrue(query.waitForExistence(timeout: Self.timeout), "поле поиска не появилось")
+        }
 
         // Одного тапа мало: пока идёт анимация показа модального окна, он может
         // не дать полю фокус, и ввод падает с «neither element nor any
@@ -65,6 +76,19 @@ final class CriticalPathUITests: XCTestCase {
     private static let almatyID = 1_526_384
     private static let timeout: TimeInterval = 10
     private static let shortTimeout: TimeInterval = 3
+}
+
+private extension XCUIElement {
+
+    /// `waitForExistence` ждёт появления в дереве, а не готовности к тапу.
+    /// Разница видна только на анимациях — и проявляется случайным падением.
+    func waitForHittable(timeout: TimeInterval) -> Bool {
+        let hittable = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "isHittable == true"),
+            object: self
+        )
+        return XCTWaiter().wait(for: [hittable], timeout: timeout) == .completed
+    }
 }
 
 /// Аргумент дублируется строкой: тестовый таргет не видит код приложения.
