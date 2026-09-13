@@ -33,6 +33,27 @@
 		280E4E04302B9FB200587022 /* MeteoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MeteoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		5A1F0C04302C0004005870AA /* Exceptions for "MeteoTests" folder in "MeteoTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				__Snapshots__/ForecastSnapshotTests/forecast.failed.png,
+				__Snapshots__/ForecastSnapshotTests/forecast.loaded.png,
+				__Snapshots__/ForecastSnapshotTests/forecast.loading.png,
+				__Snapshots__/SavedLocationsSnapshotTests/saved.empty.png,
+				__Snapshots__/SavedLocationsSnapshotTests/saved.loaded.png,
+				__Snapshots__/SavedLocationsSnapshotTests/saved.loading.png,
+				__Snapshots__/SavedLocationsSnapshotTests/saved.partial-failure.png,
+				__Snapshots__/SearchSnapshotTests/search.empty.png,
+				__Snapshots__/SearchSnapshotTests/search.failed.png,
+				__Snapshots__/SearchSnapshotTests/search.hint.png,
+				__Snapshots__/SearchSnapshotTests/search.results.png,
+				__Snapshots__/SearchSnapshotTests/search.searching.png,
+			);
+			target = 280E4DF9302B9FB200587022 /* MeteoTests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		280E4DEF302B9FAF00587022 /* Meteo */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
@@ -41,6 +62,9 @@
 		};
 		280E4DFD302B9FB200587022 /* MeteoTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				5A1F0C04302C0004005870AA /* Exceptions for "MeteoTests" folder in "MeteoTests" target */,
+			);
 			path = MeteoTests;
 			sourceTree = "<group>";
 		};
