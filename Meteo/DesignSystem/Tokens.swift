@@ -20,6 +20,9 @@ nonisolated enum Palette {
 }
 
 nonisolated enum Spacing {
+    /// Переменной в Figma не имеет: ноль — это «без отступа», а не размер.
+    /// Токен заведён, чтобы вёрстка обходилась без числовых литералов.
+    static let none: CGFloat = 0
     static let xs: CGFloat = 4
     static let sm: CGFloat = 8
     static let md: CGFloat = 16

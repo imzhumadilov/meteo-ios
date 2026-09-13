@@ -79,7 +79,7 @@ struct ForecastView: View {
     /// Здесь `VStack`, а не `List`: карточка целиком лежит внутри `ScrollView`
     /// страницы, и вложенный список ломал бы прокрутку.
     private func dailyCard(_ rows: [ForecastViewModel.DayRow]) -> some View {
-        VStack(spacing: 0) {
+        VStack(spacing: Spacing.none) {
             ForEach(Array(rows.enumerated()), id: \.element.id) { index, row in
                 if index > 0 {
                     Divider().overlay(Palette.separator)
