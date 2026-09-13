@@ -12,29 +12,29 @@ struct SearchSnapshotTests {
 
     @Test("Подсказка")
     func hint() throws {
-        try Snapshot.assert(makeView(state: .hint), named: "search-hint")
+        try Snapshot.assert(makeView(state: .hint), screen: "search", state: "hint")
     }
 
     @Test("Идёт поиск")
     func searching() throws {
-        try Snapshot.assert(makeView(state: .searching), named: "search-searching")
+        try Snapshot.assert(makeView(state: .searching), screen: "search", state: "searching")
     }
 
     @Test("Результаты")
     func results() throws {
-        try Snapshot.assert(makeView(state: .results(SnapshotData.cities)), named: "search-results")
+        try Snapshot.assert(makeView(state: .results(SnapshotData.cities)), screen: "search", state: "results")
     }
 
     @Test("Ничего не найдено")
     func empty() throws {
-        try Snapshot.assert(makeView(state: .empty), named: "search-empty")
+        try Snapshot.assert(makeView(state: .empty), screen: "search", state: "empty")
     }
 
     @Test("Ошибка")
     func failed() throws {
         try Snapshot.assert(
             makeView(state: .failed("Нет соединения с интернетом")),
-            named: "search-failed"
+            screen: "search", state: "failed"
         )
     }
 

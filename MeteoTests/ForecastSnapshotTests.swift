@@ -13,19 +13,19 @@ struct ForecastSnapshotTests {
 
     @Test("Загрузка")
     func loading() throws {
-        try Snapshot.assert(makeView(state: .loading), named: "forecast-loading")
+        try Snapshot.assert(makeView(state: .loading), screen: "forecast", state: "loading")
     }
 
     @Test("Показ прогноза")
     func loaded() throws {
-        try Snapshot.assert(makeView(state: .loaded(SnapshotData.forecast)), named: "forecast-loaded")
+        try Snapshot.assert(makeView(state: .loaded(SnapshotData.forecast)), screen: "forecast", state: "loaded")
     }
 
     @Test("Ошибка")
     func failed() throws {
         try Snapshot.assert(
             makeView(state: .failed("Сервер не отвечает")),
-            named: "forecast-failed"
+            screen: "forecast", state: "failed"
         )
     }
 

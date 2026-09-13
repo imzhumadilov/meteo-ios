@@ -12,12 +12,12 @@ struct SavedLocationsSnapshotTests {
 
     @Test("Пусто")
     func empty() throws {
-        try Snapshot.assert(makeView(state: .empty), named: "saved-empty")
+        try Snapshot.assert(makeView(state: .empty), screen: "saved", state: "empty")
     }
 
     @Test("Загрузка")
     func loading() throws {
-        try Snapshot.assert(makeView(state: .loading(rows(temperature: .loading))), named: "saved-loading")
+        try Snapshot.assert(makeView(state: .loading(rows(temperature: .loading))), screen: "saved", state: "loading")
     }
 
     @Test("Показ")
@@ -28,7 +28,7 @@ struct SavedLocationsSnapshotTests {
                 row(SnapshotData.astana, .value("18°")),
                 row(SnapshotData.tashkent, .value("29°")),
             ])),
-            named: "saved-loaded"
+            screen: "saved", state: "loaded"
         )
     }
 
@@ -40,7 +40,7 @@ struct SavedLocationsSnapshotTests {
                 row(SnapshotData.astana, .unavailable),
                 row(SnapshotData.tashkent, .value("29°")),
             ])),
-            named: "saved-partial-failure"
+            screen: "saved", state: "partial-failure"
         )
     }
 

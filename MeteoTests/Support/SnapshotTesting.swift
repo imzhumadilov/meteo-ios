@@ -4,16 +4,11 @@
 //
 
 import Foundation
+import SnapshotTesting
 import SwiftUI
 import Testing
 import UIKit
 
-/// Съёмка экранов и сравнение с эталоном в репозитории.
-///
-/// Своя реализация вместо `swift-snapshot-testing`: подключение пакета требует
-/// правок `project.pbxproj`, которые запрещены правилами проекта. Механизм
-/// намеренно маленький — если пакет всё же подключат, этот файл выбрасывается,
-/// а сами тесты почти не меняются.
 /// Снапшоты входят только в полный прогон: план `Full` задаёт переменную
 /// `SNAPSHOTS`, план `Fast` — нет.
 ///
@@ -25,6 +20,13 @@ nonisolated enum SnapshotSuite {
     }
 }
 
+/// Сравнение, запись эталонов, артефакты расхождений и сообщения о падении —
+/// `swift-snapshot-testing`. Здесь остаётся то, чего в библиотеке нет:
+/// проверка окружения и **отрисовка**.
+///
+/// Отрисовка своя по измеренной причине: библиотечная не замораживает анимации,
+/// и состояния `loading` и `searching` расходятся от прогона к прогону —
+/// индикатор загрузки попадает в кадр под случайным углом.
 @MainActor
 enum Snapshot {
 
@@ -44,62 +46,48 @@ enum Snapshot {
         ProcessInfo.processInfo.environment["SNAPSHOT_RECORD"] == "1"
     }
 
+    /// Имя файла библиотека склеивает как `<экран>.<состояние>.png`, поэтому
+    /// части передаются отдельно. Одним куском имя превращалось бы в скрытый
+    /// файл с точкой в начале.
     static func assert(
         _ view: some View,
-        named name: String,
-        fileID: String = #fileID,
-        filePath: String = #filePath,
-        line: Int = #line,
-        column: Int = #column
+        screen: String,
+        state: String,
+        fileID: StaticString = #fileID,
+        filePath: StaticString = #filePath,
+        line: UInt = #line,
+        column: UInt = #column
     ) throws {
-        let location = SourceLocation(fileID: fileID, filePath: filePath, line: line, column: column)
-
-        try checkEnvironment(at: location)
-
-        let rendered = try #require(pixels(of: try render(view)), "не удалось отрисовать экран", sourceLocation: location)
-        let reference = referenceURL(for: name, filePath: filePath)
-
-        guard !isRecording, FileManager.default.fileExists(atPath: reference.path) else {
-            try write(try render(view), to: reference)
-            Issue.record(
-                """
-                Эталон записан: \(reference.lastPathComponent)
-                Проверьте изображение глазами и запустите прогон ещё раз — \
-                тест, который сам создал эталон, ничего не проверил.
-                """,
-                sourceLocation: location
+        try checkEnvironment(
+            at: SourceLocation(
+                fileID: "\(fileID)",
+                filePath: "\(filePath)",
+                line: Int(line),
+                column: Int(column)
             )
-            return
+        )
+
+        let image = try render(view)
+
+        withSnapshotTesting(record: isRecording ? .all : .missing) {
+            assertSnapshot(
+                of: image,
+                as: .image,
+                named: state,
+                fileID: fileID,
+                file: filePath,
+                testName: screen,
+                line: line,
+                column: column
+            )
         }
-
-        let expected = try #require(
-            pixels(of: UIImage(data: try Data(contentsOf: reference)) ?? UIImage()),
-            "эталон \(reference.lastPathComponent) не читается как изображение",
-            sourceLocation: location
-        )
-
-        guard rendered != expected else { return }
-
-        let failure = reference
-            .deletingLastPathComponent()
-            .appendingPathComponent("\(name).failure.png")
-        try write(try render(view), to: failure)
-
-        Issue.record(
-            """
-            Экран разошёлся с эталоном: \(name)
-            Отличается пикселей: \(differingPixels(rendered, expected)) из \(rendered.count / 4)
-            Снято:  \(failure.path)
-            Эталон: \(reference.path)
-            Если вёрстка изменена осознанно — перезапишите эталоны прогоном \
-            с SNAPSHOT_RECORD=1.
-            """,
-            sourceLocation: location
-        )
     }
 
     // MARK: - Окружение
 
+    /// Прогон на чужом окружении не должен молчать: без этой проверки он
+    /// либо покажет расхождение там, где вёрстку не меняли, либо — в режиме
+    /// записи — тихо перезапишет эталоны неверными.
     private static func checkEnvironment(at location: SourceLocation) throws {
         let environment = ProcessInfo.processInfo.environment
         let device = environment["SIMULATOR_DEVICE_NAME"] ?? "неизвестно"
@@ -137,8 +125,7 @@ enum Snapshot {
         controller.view.layoutIfNeeded()
 
         // Анимации останавливаются на нулевом кадре. Без этого индикатор
-        // загрузки попадает в снимок под случайным углом, и снапшот
-        // расходится с эталоном от прогона к прогону.
+        // загрузки попадает в снимок под случайным углом.
         UIView.setAnimationsEnabled(false)
         freezeAnimations(in: controller.view.layer)
 
@@ -153,7 +140,7 @@ enum Snapshot {
         }
 
         // `layer.render(in:)`, а не `drawHierarchy(afterScreenUpdates:)`:
-        // второй рисует экранное содержимое и прокручивает runloop, из-за чего
+        // второй прокручивает runloop и рисует экранное содержимое, из-за чего
         // снимок зависит от того, что ещё происходит на экране.
         return UIGraphicsImageRenderer(size: Device.size, format: format).image { context in
             controller.view.layer.render(in: context.cgContext)
@@ -166,56 +153,5 @@ enum Snapshot {
         layer.speed = 0
         layer.timeOffset = 0
         layer.sublayers?.forEach(freezeAnimations)
-    }
-
-    /// Сравниваются сырые пиксели, а не байты PNG: кодировщик волен
-    /// упаковывать одно и то же изображение по-разному.
-    private static func pixels(of image: UIImage) -> Data? {
-        guard let cgImage = image.cgImage else { return nil }
-
-        let width = cgImage.width
-        let height = cgImage.height
-        var bytes = [UInt8](repeating: 0, count: width * height * 4)
-
-        guard let context = CGContext(
-            data: &bytes,
-            width: width,
-            height: height,
-            bitsPerComponent: 8,
-            bytesPerRow: width * 4,
-            space: CGColorSpaceCreateDeviceRGB(),
-            bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue
-        ) else {
-            return nil
-        }
-
-        context.draw(cgImage, in: CGRect(x: 0, y: 0, width: width, height: height))
-        return Data(bytes)
-    }
-
-    private static func differingPixels(_ lhs: Data, _ rhs: Data) -> Int {
-        guard lhs.count == rhs.count else { return max(lhs.count, rhs.count) / 4 }
-
-        return stride(from: 0, to: lhs.count, by: 4).count { offset in
-            lhs[offset ..< offset + 4] != rhs[offset ..< offset + 4]
-        }
-    }
-
-    // MARK: - Файлы
-
-    private static func referenceURL(for name: String, filePath: String) -> URL {
-        URL(fileURLWithPath: filePath)
-            .deletingLastPathComponent()
-            .appendingPathComponent("__Snapshots__")
-            .appendingPathComponent(URL(fileURLWithPath: filePath).deletingPathExtension().lastPathComponent)
-            .appendingPathComponent("\(name).png")
-    }
-
-    private static func write(_ image: UIImage, to url: URL) throws {
-        try FileManager.default.createDirectory(
-            at: url.deletingLastPathComponent(),
-            withIntermediateDirectories: true
-        )
-        try #require(image.pngData()).write(to: url)
     }
 }
