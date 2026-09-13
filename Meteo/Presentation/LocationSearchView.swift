@@ -7,18 +7,21 @@ import SwiftUI
 
 struct LocationSearchView: View {
 
+    @Environment(\.dismiss) private var dismiss
+
     @State private var viewModel: LocationSearchViewModel
-    @State private var selectedLocation: Location?
     @FocusState private var isQueryFieldFocused: Bool
 
-    private let makeForecastViewModel: (Location) -> ForecastViewModel
+    /// Экран открывается модально и только выбирает город. Что делать
+    /// с выбором, решает тот, кто его открыл.
+    private let onSelect: (Location) -> Void
 
     init(
         viewModel: LocationSearchViewModel,
-        makeForecastViewModel: @escaping (Location) -> ForecastViewModel
+        onSelect: @escaping (Location) -> Void
     ) {
         _viewModel = State(initialValue: viewModel)
-        self.makeForecastViewModel = makeForecastViewModel
+        self.onSelect = onSelect
     }
 
     var body: some View {
@@ -31,8 +34,13 @@ struct LocationSearchView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .background(Palette.background)
             .navigationTitle("Поиск города")
-            .navigationDestination(item: $selectedLocation) { location in
-                ForecastView(viewModel: makeForecastViewModel(location))
+            .toolbar {
+                // Закрыть модальное окно, ничего не выбрав. Свайпом вниз оно
+                // тоже закрывается, но полагаться только на жест нельзя.
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Отмена") { dismiss() }
+                        .tint(Palette.accent)
+                }
             }
         }
         .task(id: viewModel.searchID) {
@@ -81,10 +89,8 @@ struct LocationSearchView: View {
 
     private func results(_ locations: [Location]) -> some View {
         List(locations) { location in
-            // Кнопка, а не NavigationLink: в макете у строк нет системной
-            // галочки перехода, а List рисует её у ссылки автоматически.
             Button {
-                selectedLocation = location
+                onSelect(location)
             } label: {
                 row(location)
             }
