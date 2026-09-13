@@ -202,6 +202,7 @@ Clean Architecture, async/await и клиент-серверная работа,
 |--------------------------------|----------------------------------|--------------|
 | Typography.largeTitle          | .largeTitle + .semibold          | 34 semibold  |
 | Typography.title               | .title + .semibold               | 28 semibold  |
+| Typography.title3              | .title3                          | 20 regular   |
 | Typography.headline            | .headline                        | 17 semibold  |
 | Typography.body                | .body                            | 17 regular   |
 | Typography.subheadline         | .subheadline                     | 15 regular   |
@@ -218,6 +219,13 @@ Clean Architecture, async/await и клиент-серверная работа,
 |-----------------------|----------|----------------|
 | BorderWidth.regular   | 1        | без фокуса     |
 | BorderWidth.focused   | 2        | в фокусе       |
+
+Нулевого отступа переменной в Figma тоже нет — ноль это «без отступа»,
+а не размер. Токен заведён, чтобы вёрстка обходилась без литералов:
+
+| Swift         | Значение | Когда                          |
+|---------------|----------|--------------------------------|
+| Spacing.none  | 0        | элементы встык, без промежутка |
 
 В вёрстке **не должно быть числовых и цветовых литералов**: ни `.padding(16)`,
 ни `.font(.system(size: 17))`, ни хексов. Литерал означает потерянную связь

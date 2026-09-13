@@ -52,7 +52,7 @@ struct LocationSearchViewModelTests {
 
     @Test("Сетевая ошибка переводит экран в состояние ошибки с текстом")
     func showsFailureWhenRequestFails() async {
-        let viewModel = makeViewModel(returning: .failure(SearchError.offline))
+        let viewModel = makeViewModel(returning: .failure(WeatherServiceError.offline))
         viewModel.query = "алма"
 
         await viewModel.search()

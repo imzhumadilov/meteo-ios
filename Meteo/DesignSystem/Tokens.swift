@@ -20,6 +20,9 @@ nonisolated enum Palette {
 }
 
 nonisolated enum Spacing {
+    /// Переменной в Figma не имеет: ноль — это «без отступа», а не размер.
+    /// Токен заведён, чтобы вёрстка обходилась без числовых литералов.
+    static let none: CGFloat = 0
     static let xs: CGFloat = 4
     static let sm: CGFloat = 8
     static let md: CGFloat = 16
@@ -44,6 +47,7 @@ nonisolated enum BorderWidth {
 nonisolated enum Typography {
     static let largeTitle = Font.largeTitle.weight(.semibold)
     static let title = Font.title.weight(.semibold)
+    static let title3 = Font.title3
     static let headline = Font.headline
     static let body = Font.body
     static let subheadline = Font.subheadline

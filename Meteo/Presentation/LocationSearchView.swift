@@ -8,10 +8,17 @@ import SwiftUI
 struct LocationSearchView: View {
 
     @State private var viewModel: LocationSearchViewModel
+    @State private var selectedLocation: Location?
     @FocusState private var isQueryFieldFocused: Bool
 
-    init(viewModel: LocationSearchViewModel) {
+    private let makeForecastViewModel: (Location) -> ForecastViewModel
+
+    init(
+        viewModel: LocationSearchViewModel,
+        makeForecastViewModel: @escaping (Location) -> ForecastViewModel
+    ) {
         _viewModel = State(initialValue: viewModel)
+        self.makeForecastViewModel = makeForecastViewModel
     }
 
     var body: some View {
@@ -24,6 +31,9 @@ struct LocationSearchView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
             .background(Palette.background)
             .navigationTitle("Поиск города")
+            .navigationDestination(item: $selectedLocation) { location in
+                ForecastView(viewModel: makeForecastViewModel(location))
+            }
         }
         .task(id: viewModel.searchID) {
             await viewModel.search()
@@ -71,19 +81,14 @@ struct LocationSearchView: View {
 
     private func results(_ locations: [Location]) -> some View {
         List(locations) { location in
-            VStack(alignment: .leading, spacing: Spacing.xs) {
-                Text(location.name)
-                    .font(Typography.headline)
-                    .foregroundStyle(Palette.textPrimary)
-
-                if let subtitle = Self.subtitle(for: location) {
-                    Text(subtitle)
-                        .font(Typography.subheadline)
-                        .foregroundStyle(Palette.textSecondary)
-                }
+            // Кнопка, а не NavigationLink: в макете у строк нет системной
+            // галочки перехода, а List рисует её у ссылки автоматически.
+            Button {
+                selectedLocation = location
+            } label: {
+                row(location)
             }
-            .padding(Spacing.md)
-            .frame(maxWidth: .infinity, alignment: .leading)
+            .buttonStyle(.plain)
             // Отступы строки обнулены и заданы вручную, чтобы разделитель шёл
             // во всю ширину карточки, как в макете, а не с отбивкой от текста.
             .listRowInsets(EdgeInsets())
@@ -94,6 +99,23 @@ struct LocationSearchView: View {
         .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)
         .contentMargins(.top, 0, for: .scrollContent)
+    }
+
+    private func row(_ location: Location) -> some View {
+        VStack(alignment: .leading, spacing: Spacing.xs) {
+            Text(location.name)
+                .font(Typography.headline)
+                .foregroundStyle(Palette.textPrimary)
+
+            if let subtitle = Self.subtitle(for: location) {
+                Text(subtitle)
+                    .font(Typography.subheadline)
+                    .foregroundStyle(Palette.textSecondary)
+            }
+        }
+        .padding(Spacing.md)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .contentShape(.rect)
     }
 
     private func message(_ text: String) -> some View {
