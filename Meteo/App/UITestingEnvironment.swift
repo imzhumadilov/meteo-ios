@@ -6,6 +6,10 @@
 import Foundation
 import Synchronization
 
+// Весь файл существует только в отладочной сборке: подставные источники
+// не должны уезжать в релиз вместе с приложением.
+#if DEBUG
+
 /// **Единственное место, где продакшн-код знает о тестах.**
 ///
 /// UI-тест запускает приложение с аргументом, и `DIContainer` собирает граф
@@ -76,3 +80,4 @@ nonisolated final class InMemorySavedLocationsStore: SavedLocationsStoring, Send
         }
     }
 }
+#endif

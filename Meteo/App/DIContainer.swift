@@ -17,31 +17,47 @@ final class DIContainer {
     private let removeSavedLocation: RemoveSavedLocationUseCase
 
     init() {
-        // Единственная развилка, где приложение знает о тестах.
+        let sources = Self.makeSources()
+
+        searchLocations = SearchLocationsUseCase(repository: sources.locations)
+        getForecast = GetForecastUseCase(repository: sources.forecasts)
+        getSavedLocations = GetSavedLocationsUseCase(store: sources.store)
+        getWeatherForSavedLocations = GetWeatherForSavedLocationsUseCase(
+            store: sources.store,
+            forecasts: sources.forecasts
+        )
+        addSavedLocation = AddSavedLocationUseCase(store: sources.store)
+        removeSavedLocation = RemoveSavedLocationUseCase(store: sources.store)
+    }
+
+    private struct Sources {
         let locations: LocationSearching
         let forecasts: ForecastProviding
         let store: SavedLocationsStoring
+    }
 
+    /// Единственная развилка, где приложение знает о тестах.
+    ///
+    /// Вся ветка с заглушками — под `#if DEBUG`: в релизной сборке её нет,
+    /// как нет и самих заглушек. Иначе чужой код уезжал бы пользователям
+    /// и включался аргументом запуска.
+    private static func makeSources() -> Sources {
+        #if DEBUG
         if UITestingEnvironment.isEnabled {
-            locations = StubLocationSearching()
-            forecasts = StubForecastProviding()
-            store = InMemorySavedLocationsStore()
-        } else {
-            let client = HTTPClient()
-            locations = OpenMeteoLocationRepository(client: client)
-            forecasts = OpenMeteoForecastRepository(client: client)
-            store = UserDefaultsSavedLocationsStore()
+            return Sources(
+                locations: StubLocationSearching(),
+                forecasts: StubForecastProviding(),
+                store: InMemorySavedLocationsStore()
+            )
         }
+        #endif
 
-        searchLocations = SearchLocationsUseCase(repository: locations)
-        getForecast = GetForecastUseCase(repository: forecasts)
-        getSavedLocations = GetSavedLocationsUseCase(store: store)
-        getWeatherForSavedLocations = GetWeatherForSavedLocationsUseCase(
-            store: store,
-            forecasts: forecasts
+        let client = HTTPClient()
+        return Sources(
+            locations: OpenMeteoLocationRepository(client: client),
+            forecasts: OpenMeteoForecastRepository(client: client),
+            store: UserDefaultsSavedLocationsStore()
         )
-        addSavedLocation = AddSavedLocationUseCase(store: store)
-        removeSavedLocation = RemoveSavedLocationUseCase(store: store)
     }
 
     func makeSavedLocationsViewModel() -> SavedLocationsViewModel {
