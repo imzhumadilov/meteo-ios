@@ -67,6 +67,7 @@ struct LocationSearchView: View {
                     )
             }
             .padding(.horizontal, Spacing.md)
+            .accessibilityIdentifier("search.query")
     }
 
     @ViewBuilder
@@ -95,6 +96,7 @@ struct LocationSearchView: View {
                 row(location)
             }
             .buttonStyle(.plain)
+            .accessibilityIdentifier("search.result.\(location.id)")
             // Отступы строки обнулены и заданы вручную, чтобы разделитель шёл
             // во всю ширину карточки, как в макете, а не с отбивкой от текста.
             .listRowInsets(EdgeInsets())
