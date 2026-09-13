@@ -37,6 +37,8 @@ final class SavedLocationsViewModel {
     private let addLocation: AddSavedLocationUseCase
     private let removeLocation: RemoveSavedLocationUseCase
 
+    private let isFrozen: Bool
+
     init(
         getSavedLocations: GetSavedLocationsUseCase,
         getWeather: GetWeatherForSavedLocationsUseCase,
@@ -47,9 +49,28 @@ final class SavedLocationsViewModel {
         self.getWeather = getWeather
         self.addLocation = addLocation
         self.removeLocation = removeLocation
+        self.isFrozen = false
+    }
+
+    /// Шов для снапшотов: см. `LocationSearchViewModel`.
+    init(
+        frozenAt state: State,
+        getSavedLocations: GetSavedLocationsUseCase,
+        getWeather: GetWeatherForSavedLocationsUseCase,
+        addLocation: AddSavedLocationUseCase,
+        removeLocation: RemoveSavedLocationUseCase
+    ) {
+        self.getSavedLocations = getSavedLocations
+        self.getWeather = getWeather
+        self.addLocation = addLocation
+        self.removeLocation = removeLocation
+        self.isFrozen = true
+        self.state = state
     }
 
     func refresh() async {
+        guard !isFrozen else { return }
+
         let locations = getSavedLocations.execute()
 
         guard !locations.isEmpty else {

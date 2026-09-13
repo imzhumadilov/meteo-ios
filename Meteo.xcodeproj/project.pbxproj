@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		5A1F0C01302C0001005870AA /* SnapshotTesting in Frameworks */ = {isa = PBXBuildFile; productRef = 5A1F0C03302C0003005870AA /* SnapshotTesting */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		280E4DFB302B9FB200587022 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -29,6 +33,27 @@
 		280E4E04302B9FB200587022 /* MeteoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MeteoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		5A1F0C04302C0004005870AA /* Exceptions for "MeteoTests" folder in "MeteoTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				__Snapshots__/ForecastSnapshotTests/forecast.failed.png,
+				__Snapshots__/ForecastSnapshotTests/forecast.loaded.png,
+				__Snapshots__/ForecastSnapshotTests/forecast.loading.png,
+				__Snapshots__/SavedLocationsSnapshotTests/saved.empty.png,
+				__Snapshots__/SavedLocationsSnapshotTests/saved.loaded.png,
+				__Snapshots__/SavedLocationsSnapshotTests/saved.loading.png,
+				__Snapshots__/SavedLocationsSnapshotTests/saved.partial-failure.png,
+				__Snapshots__/SearchSnapshotTests/search.empty.png,
+				__Snapshots__/SearchSnapshotTests/search.failed.png,
+				__Snapshots__/SearchSnapshotTests/search.hint.png,
+				__Snapshots__/SearchSnapshotTests/search.results.png,
+				__Snapshots__/SearchSnapshotTests/search.searching.png,
+			);
+			target = 280E4DF9302B9FB200587022 /* MeteoTests */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		280E4DEF302B9FAF00587022 /* Meteo */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
@@ -37,6 +62,9 @@
 		};
 		280E4DFD302B9FB200587022 /* MeteoTests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				5A1F0C04302C0004005870AA /* Exceptions for "MeteoTests" folder in "MeteoTests" target */,
+			);
 			path = MeteoTests;
 			sourceTree = "<group>";
 		};
@@ -59,6 +87,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5A1F0C01302C0001005870AA /* SnapshotTesting in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -135,6 +164,7 @@
 			);
 			name = MeteoTests;
 			packageProductDependencies = (
+				5A1F0C03302C0003005870AA /* SnapshotTesting */,
 			);
 			productName = MeteoTests;
 			productReference = 280E4DFA302B9FB200587022 /* MeteoTests.xctest */;
@@ -196,6 +226,9 @@
 			mainGroup = 280E4DE4302B9FAF00587022;
 			minimizedProjectReferenceProxies = 1;
 			preferredProjectObjectVersion = 77;
+			packageReferences = (
+				5A1F0C02302C0002005870AA /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */,
+			);
 			productRefGroup = 280E4DEE302B9FAF00587022 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -578,6 +611,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5A1F0C02302C0002005870AA /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/pointfreeco/swift-snapshot-testing";
+			requirement = {
+				kind = exactVersion;
+				version = 1.19.4;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5A1F0C03302C0003005870AA /* SnapshotTesting */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5A1F0C02302C0002005870AA /* XCRemoteSwiftPackageReference "swift-snapshot-testing" */;
+			productName = SnapshotTesting;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 280E4DE5302B9FAF00587022 /* Project object */;
 }
